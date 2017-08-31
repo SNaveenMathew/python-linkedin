@@ -4,7 +4,7 @@ Python interface to the LinkedIn API
 
 [![LinkedIn](http://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png)](http://developer.linkedin.com)
 
-This library provides a pure Python interface to the LinkedIn **Profile**, **Group**, **Company**, **Jobs**, **Search**, **Share**, **Network** and **Invitation** REST APIs.
+This library provides a pure Python interface to the LinkedIn **Profile**, **Search** and **Company** REST APIs.
 
 [LinkedIn](http://developer.linkedin.com) provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
 
@@ -171,7 +171,7 @@ application.get_connections(selectors=['headline', 'first-name', 'last-name'], p
 ```
 
 ## Search API
-There are 3 types of Search APIs. One is the **People Search** API, second one is the **Company Search** API and the last one is **Jobs Search** API.
+There are 3 types of Search APIs. One is the **People Search** API, second one is the **Company Search** API and the last one is **Jobs Search** API. Only company search API works in the current settings of LinkedIn API.
 
 The People Search API returns information about people. It lets you implement most of what shows up when you do a search for "People" in the top right box on LinkedIn.com.
 You can get more information from [here](http://developers.linkedin.com/documents/people-search-api).
@@ -245,44 +245,6 @@ application.search_job(selectors=[{'jobs': ['id', 'customer-job-code', 'posting-
     u'postingDate': {u'day': 21, u'month': 3, u'year': 2013}}]}}
 ```
 
-## Group API
-The Groups API provides rich access to read and interact with LinkedIn’s groups functionality. You can get more information from [here](http://developers.linkedin.com/documents/groups-api). By the help of the interface, you can fetch group details, get your group memberships as well as your posts for a specific group which you are a member of.
-
-```python
-application.get_group(41001)
-{u'id': u'41001', u'name': u'Object Oriented Programming'}
-
-application.get_memberships(params={'count': 20})
-{u'_total': 1,
- u'values': [{u'_key': u'25827',
-   u'group': {u'id': u'25827', u'name': u'Python Community'},
-   u'membershipState': {u'code': u'member'}}]}
-
-application.get_posts(41001)
-
-application.get_post_comments(
-    %POST_ID%,
-    selectors=[
-        {"creator": ["first-name", "last-name"]},
-        "creation-timestamp",
-        "text"
-    ],
-    params={"start": 0, "count": 20}
-) 
-```
-
-You can also submit a new post into a specific group.
-
-```python
-title = 'Scala for the Impatient'
-summary = 'A new book has been published'
-submitted_url = 'http://horstmann.com/scala/'
-submitted_image_url = 'http://horstmann.com/scala/images/cover.png'
-description = 'It is a great book for the keen beginners. Check it out!'
-
-application.submit_group_post(41001, title, summary, submitted_url, submitted_image_url, description)
-```
-
 ## Company API
 The Company API:
  * Retrieves and displays one or more company profiles based on the company ID or universal name.
@@ -346,100 +308,6 @@ application.follow_company(1035)
 True
 
 application.unfollow_company(1035)
-True
-```
-
-## Job API
-The Jobs APIs provide access to view jobs and job data. You can get more information from its [documentation](http://developers.linkedin.com/documents/job-lookup-api-and-fields).
-
-```python
-application.get_job(job_id=5174636)
-{u'active': True,
- u'company': {u'id': 2329, u'name': u'Schneider Electric'},
- u'descriptionSnippet': u"The Industrial Accounts Sales Manager is a quota carrying senior sales position principally responsible for generating new sales and growing company's share of wallet within the industrial business, contracting business and consulting engineering business. The primary objective is to build and establish strong and lasting relationships with technical teams and at executive level within specific in",
- u'id': 5174636,
- u'position': {u'title': u'Industrial Accounts Sales Manager'},
- u'postingTimestamp': 1363860033000}
-```
-
-You can also fetch you job bookmarks.
-
-```python
-application.get_job_bookmarks()
-{u'_total': 0}
-```
-
-## Share API
-Network updates serve as one of the core experiences on LinkedIn, giving users the ability to share rich content to their professional network. You can get more information from [here](http://developers.linkedin.com/documents/share-api).
-
-```
-application.submit_share('Posting from the API using JSON', 'A title for your share', None, 'http://www.linkedin.com', 'http://d.pr/3OWS')
-{'updateKey': u'UNIU-8219502-5705061301949063168-SHARE'
- 'updateURL': 'http://www.linkedin.com/updates?discuss=&amp;scope=8219502&amp;stype=M&amp;topic=5705061301949063168&amp;type=U&amp;a=aovi'}
-```
-
-## Network API
-The Get Network Updates API returns the users network updates, which is the LinkedIn term for the user's feed. This call returns most of what shows up in the middle column of the LinkedIn.com home page, either for the member or the member's connections. You can get more information from [here](http://developers.linkedin.com/documents/get-network-updates-and-statistics-api).
-
-There are many network update types. You can look at them by importing **NETWORK_UPDATES** enumeration.
-
-```python
-from linkedin.linkedin import NETWORK_UPDATES
-print NETWORK_UPDATES.enums
-{'APPLICATION': 'APPS',
- 'CHANGED_PROFILE': 'PRFU',
- 'COMPANY': 'CMPY',
- 'CONNECTION': 'CONN',
- 'EXTENDED_PROFILE': 'PRFX',
- 'GROUP': 'JGRP',
- 'JOB': 'JOBS',
- 'PICTURE': 'PICT',
- 'SHARED': 'SHAR',
- 'VIRAL': 'VIRL'}
-
-update_types = (NETWORK_UPDATES.CONNECTION, NETWORK_UPDATES.PICTURE)
-application.get_network_updates(update_types)
-
-{u'_total': 1,
- u'values': [{u'isCommentable': True,
-   u'isLikable': True,
-   u'isLiked': False,
-   u'numLikes': 0,
-   u'timestamp': 1363470126509,
-   u'updateComments': {u'_total': 0},
-   u'updateContent': {u'person': {u'apiStandardProfileRequest': {u'headers': {u'_total': 1,
-       u'values': [{u'name': u'x-li-auth-token', u'value': u'name:Egbj'}]},
-      u'url': u'http://api.linkedin.com/v1/people/COjFALsKDP'},
-     u'firstName': u'ozgur',
-     u'headline': u'This is my headline',
-     u'id': u'COjFALsKDP',
-     u'lastName': u'vatansever',
-     u'siteStandardProfileRequest': {u'url': u'http://www.linkedin.com/profile/view?id=46113651&authType=name&authToken=Egbj&trk=api*a101945*s101945*'}}},
-   u'updateKey': u'UNIU-46113651-5718808205493026816-SHARE',
-   u'updateType': u'SHAR'}]}
-```
-
-## Invitation API
-The Invitation API allows your users to invite people they find in your application to their LinkedIn network. You can get more information from [here](http://developers.linkedin.com/documents/invitation-api).
-
-```python
-from linkedin.models import LinkedInRecipient, LinkedInInvitation
-recipient = LinkedInRecipient(None, 'john.doe@python.org', 'John', 'Doe')
-print recipient.json
-{'person': {'_path': '/people/email=john.doe@python.org',
-  'first-name': 'John',
-  'last-name': 'Doe'}}
-
-invitation = LinkedInInvitation('Hello John', "What's up? Can I add you as a friend?", (recipient,), 'friend')
-print invitation.json
-{'body': "What's up? Can I add you as a friend?",
- 'item-content': {'invitation-request': {'connect-type': 'friend'}},
- 'recipients': {'values': [{'person': {'_path': '/people/email=john.doe@python.org',
-     'first-name': 'John',
-     'last-name': 'Doe'}}]},
- 'subject': 'Hello John'}
-
-application.send_invitation(invitation)
 True
 ```
 
